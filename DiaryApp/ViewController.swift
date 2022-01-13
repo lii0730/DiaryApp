@@ -48,10 +48,15 @@ class ViewController: UIViewController {
     
     @objc func starDiaryNotification(_ notification: Notification) {
         guard let starDiary = notification.object as? [String: Any] else { return }
+        guard let diary = starDiary["diary"] as? Diary else { return }
         guard let isStar = starDiary["isStar"] as? Bool else { return }
-        guard let indexPath = starDiary["indexPath"] as? IndexPath else { return }
+//        guard let indexPath = starDiary["indexPath"] as? IndexPath else { return }
         
-        self.diaryList[indexPath.row].isStar = isStar
+        guard let index = self.diaryList.firstIndex(where: { aDiary in
+            aDiary.uuid == diary.uuid
+        }) else { return }
+        
+        self.diaryList[index].isStar = isStar
     }
     
     @objc func editDiaryNotification(_ notification: Notification) {
@@ -93,7 +98,7 @@ class ViewController: UIViewController {
         })
     }
 
-    // 도착 전 준비단계?
+    // 도착 전 준비단계? MARK: 메모 추가 버튼 클릭 시
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let writeDiaryViewController = segue.destination as? WriteDiaryViewController {
             writeDiaryViewController.delegate = self
@@ -151,6 +156,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension ViewController: WriteDiaryViewDelegate {
+    //MARK: 메모 추가
     func didSelectRegister(diary: Diary) {
         self.diaryList.append(diary)
         

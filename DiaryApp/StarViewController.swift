@@ -79,7 +79,7 @@ class StarViewController: UIViewController {
         guard let starDiary = notification.object as? [String: Any] else { return }
         guard let diary = starDiary["diary"] as? Diary else { return }
         guard let isStar = starDiary["isStar"] as? Bool else { return }
-        guard let indexPath = starDiary["indexPath"] as? IndexPath else {return}
+//        guard let indexPath = starDiary["indexPath"] as? IndexPath else {return}
         
         if isStar {
             self.diaryList.append(diary)
@@ -88,8 +88,14 @@ class StarViewController: UIViewController {
             })
             self.collectionView.reloadData()
         } else {
-            self.diaryList.remove(at: indexPath.row)
-            self.collectionView.deleteItems(at: [indexPath])
+            
+            guard let index = self.diaryList.firstIndex(where: { aDiary in
+                aDiary.uuid == diary.uuid
+            }) else { return }
+            
+            self.collectionView.deleteItems(at: [IndexPath.init(row: index, section: 0)])
+            self.diaryList.remove(at: index)
+            self.collectionView.reloadData()
         }
     }
     
